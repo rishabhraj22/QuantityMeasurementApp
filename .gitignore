@@ -1,0 +1,19 @@
+# Maven
+/target/
+
+# Eclipse / STS
+/.settings/
+/.project
+/.classpath
+/.pom.xml
+/.mvn
+
+# VS Code (just in case)
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
