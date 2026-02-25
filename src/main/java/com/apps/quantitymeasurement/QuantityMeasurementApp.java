@@ -1,6 +1,5 @@
 package com.apps.quantitymeasurement;
 
-import com.apps.quantitymeasurement.Length.LengthUnit;
 public class QuantityMeasurementApp {
 
 	//UC1-UC-4 : Equality
@@ -15,12 +14,6 @@ public class QuantityMeasurementApp {
     }
     
     
-    //raw values
-    public static double demonstrateLengthConversion(double value, LengthUnit fromUnit, LengthUnit toUnit) {
-
-    	return Length.convert(value, fromUnit, toUnit) ; 
-    }
-
     //UC-5 : Conversion(Overloaded)
     public static Length demonstrateLengthConversion(Length length, LengthUnit toUnit) {
     	return length.convertTo(toUnit) ;
@@ -32,20 +25,20 @@ public class QuantityMeasurementApp {
     }
     
     //UC7 : Target Addition
-    public static Length demonstrateLengthAddition(Length l1, Length l2, Length.LengthUnit targetUnit) {
+    public static Length demonstrateLengthAddition(Length l1, Length l2, LengthUnit targetUnit) {
     	return l1.add(l2, targetUnit) ;
     }
     public static void main(String[] args) {
-    	System.out.println("1 ft == 12 in ? " +
-                demonstrateLengthComparison(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES));
 
-        System.out.println("convert(3 yards -> feet) = " +
-                demonstrateLengthConversion(3.0, LengthUnit.YARDS, LengthUnit.FEET));
+		System.out.println("===== UC8 DEMO OUTPUT =====");
 
-        Length sum = demonstrateLengthAddition(
-                new Length(1.0, LengthUnit.FEET),
-                new Length(12.0, LengthUnit.INCHES)
-        );
-        System.out.println("1 ft + 12 in = " + sum);
-    }
+		System.out.println(new Length(1, LengthUnit.FEET).convertTo(LengthUnit.INCHES));
+		System.out.println(new Length(1, LengthUnit.FEET).add(new Length(12, LengthUnit.INCHES), LengthUnit.FEET));
+
+		System.out.println(new Length(36, LengthUnit.INCHES).equals(new Length(1, LengthUnit.YARDS)));
+
+		System.out.println(new Length(1, LengthUnit.YARDS).add(new Length(3, LengthUnit.FEET), LengthUnit.YARDS));
+
+		System.out.println(new Length(2.54, LengthUnit.CENTIMETERS).convertTo(LengthUnit.INCHES));
+	}
 }
