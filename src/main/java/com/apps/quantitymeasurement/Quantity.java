@@ -28,6 +28,7 @@ enum ArithmeticOperation{
 	
 	abstract double compute(double a, double b) ;
 }
+
 public class Quantity <U extends IMeasurable>{
 
 	private final double value ;
