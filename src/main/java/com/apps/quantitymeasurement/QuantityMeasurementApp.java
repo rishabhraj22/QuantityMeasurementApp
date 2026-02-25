@@ -31,6 +31,10 @@ public class QuantityMeasurementApp {
     	return length1.add(length2) ;
     }
     
+    //UC7 : Target Addition
+    public static Length demonstrateLengthAddition(Length l1, Length l2, Length.LengthUnit targetUnit) {
+    	return l1.add(l2, targetUnit) ;
+    }
     public static void main(String[] args) {
     	System.out.println("1 ft == 12 in ? " +
                 demonstrateLengthComparison(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES));

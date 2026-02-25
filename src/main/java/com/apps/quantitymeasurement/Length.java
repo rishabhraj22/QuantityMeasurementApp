@@ -51,6 +51,7 @@ public class Length {
         return unit.toInches(value);
     }
     
+    // UC5: Convert instance to target unit
     public Length convertTo(LengthUnit targetUnit) {
     	if(targetUnit ==  null) {
     		throw new IllegalArgumentException("Target unit cannot be null") ;
@@ -60,6 +61,7 @@ public class Length {
     	return new Length(converted , targetUnit) ;
      }
     
+    // UC5: Static convert API
     public static double convert(double value, LengthUnit source, LengthUnit target) {
     	if(source == null || target == null) {
     		throw new IllegalArgumentException("Source / Target unit cannot be null") ;
@@ -89,6 +91,28 @@ public class Length {
     	return new Length(resultValue, this.unit) ;
     }
 
+    //UC7 : Addition with target unit specialization
+    public Length add(Length length, LengthUnit targetUnit) {
+    	if(length == null) {
+    		throw new IllegalArgumentException("Length to add cannot be null") ;
+    		
+    	}
+    	if(targetUnit == null) {
+    		throw new IllegalArgumentException("Target unit cannot be null") ;
+    	}
+    	return addAndConvert(length, targetUnit) ;
+    }
+    
+    public Length addAndConvert(Length length, LengthUnit targetUnit) {
+    	double thisInInches = this.unit.toInches(this.value) ;
+    	double thatInInches = length.unit.toInches(length.value) ;
+    	
+    	double sumInInches = thisInInches + thatInInches ;
+    	
+    	double resultValue =  targetUnit.fromInches(sumInInches) ;
+    	
+    	return new Length(resultValue, targetUnit) ;
+    }
     @Override
     public boolean equals(Object o) {
 
