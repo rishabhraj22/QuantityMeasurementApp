@@ -40,7 +40,7 @@ public class QuantityMeasurementApp {
 
     public static void main(String[] args) {
 
-        // ----- LENGTH DEMO -----
+    	// ----- LENGTH DEMO -----
         Quantity<LengthUnit> length1 = new Quantity<>(1, LengthUnit.FEET);
         Quantity<LengthUnit> length2 = new Quantity<>(12, LengthUnit.INCHES);
 

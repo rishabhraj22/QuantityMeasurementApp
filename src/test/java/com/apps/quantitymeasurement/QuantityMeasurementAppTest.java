@@ -751,6 +751,39 @@ public class QuantityMeasurementAppTest {
 
         assertThrows(IllegalArgumentException.class, () -> q1.divide((Quantity) q2));
     }
+    
+    @Test
+    void testUC13_Addition_BehaviorPreserved() {
+        Quantity<LengthUnit> a = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> b = new Quantity<>(12.0, LengthUnit.INCHES);
+
+        Quantity<LengthUnit> result = a.add(b);
+
+        assertEquals(2.0, result.getValue(), 0.0001);
+        assertEquals(LengthUnit.FEET, result.getUnit());
+    }
+
+    @Test
+    void testUC13_Subtraction_BehaviorPreserved() {
+        Quantity<LengthUnit> a = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> b = new Quantity<>(6.0, LengthUnit.INCHES);
+
+        Quantity<LengthUnit> result = a.subtract(b);
+
+        assertEquals(9.5, result.getValue(), 0.0001);
+        assertEquals(LengthUnit.FEET, result.getUnit());
+    }
+
+    @Test
+    void testUC13_Division_BehaviorPreserved() {
+        Quantity<LengthUnit> a = new Quantity<>(24.0, LengthUnit.INCHES);
+        Quantity<LengthUnit> b = new Quantity<>(2.0, LengthUnit.FEET);
+
+        double result = a.divide(b);
+
+        assertEquals(1.0, result, 0.0001);
+    }
+
 
 
 }
