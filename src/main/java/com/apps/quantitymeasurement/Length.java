@@ -5,7 +5,8 @@ public class Length {
 
     private final double value;
     private final LengthUnit unit;
-
+    private static final double EPS = 1e-6 ;
+    
     // Base unit = inches
     public enum LengthUnit {
     	
@@ -39,6 +40,13 @@ public class Length {
         this.unit = unit;
     }
 
+    public double getValue() {
+    	return value ;
+    }
+    public LengthUnit getUnit() {
+    	return unit ;
+    }
+    
     private double toBaseInches() {
         return unit.toInches(value);
     }
@@ -65,6 +73,21 @@ public class Length {
     	
     	
     }
+    
+    
+    //UC-6 : Addition 
+    public Length add(Length that) {
+    	if(that ==  null) {
+    		throw new IllegalArgumentException("Length to add cannot be null") ;
+    	}
+    	
+    	double thisInches = this.toBaseInches() ;
+    	double thatInches = that.toBaseInches();
+    	
+    	double sumInches = thisInches + thatInches ;
+    	double resultValue = this.unit.fromInches(sumInches) ;
+    	return new Length(resultValue, this.unit) ;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -77,16 +100,16 @@ public class Length {
 
         double diff = Math.abs(this.toBaseInches() - that.toBaseInches());
 
-        return diff < 0.0001;   
+        return Math.abs(this.toBaseInches() - that.toBaseInches()) <EPS ;  
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(Double.valueOf(toBaseInches()*1000));
+        return Objects.hash(Double.valueOf(toBaseInches()/EPS));
     }
 
     @Override
     public String toString() {
-        return String.format("%.2f %s", value, unit);
+        return String.format("Quantity(%.4f, %s)", value, unit);
     }
 }
