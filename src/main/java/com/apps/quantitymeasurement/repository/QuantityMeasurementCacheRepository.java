@@ -9,10 +9,24 @@ import com.apps.quantitymeasurement.model.QuantityMeasurementEntity;
  
 public class QuantityMeasurementCacheRepository implements IQuantityMeasurementRepository {
 
+    private static QuantityMeasurementCacheRepository instance;
+
     private final List<QuantityMeasurementEntity> cache = new ArrayList<>();
 
+    private QuantityMeasurementCacheRepository() {
+    }
+
+    public static QuantityMeasurementCacheRepository getInstance() {
+
+        if (instance == null) {
+            instance = new QuantityMeasurementCacheRepository();
+        }
+
+        return instance;
+    }
+
     @Override
-    public void save(QuantityMeasurementEntity entity) {
+    public void saveMeasurement(QuantityMeasurementEntity entity) {
         cache.add(entity);
     }
 
@@ -20,4 +34,5 @@ public class QuantityMeasurementCacheRepository implements IQuantityMeasurementR
     public List<QuantityMeasurementEntity> findAll() {
         return cache;
     }
+
 }

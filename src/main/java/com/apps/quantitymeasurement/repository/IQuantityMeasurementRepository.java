@@ -1,13 +1,12 @@
 package com.apps.quantitymeasurement.repository;
 
 import java.util.List;
-import com.apps.quantitymeasurement.model.QuantityMeasurementEntity;
+import com.apps.quantitymeasurement.core.IMeasurable;
+import com.apps.quantitymeasurement.model.*;
 
-//Repository interface for storing quantity measurement operations
- 
 public interface IQuantityMeasurementRepository {
 
-    void save(QuantityMeasurementEntity entity);
+    void saveMeasurement(QuantityMeasurementEntity entity);
 
     List<QuantityMeasurementEntity> findAll();
 
