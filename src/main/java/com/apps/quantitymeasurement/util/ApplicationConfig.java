@@ -1,31 +1,40 @@
 package com.apps.quantitymeasurement.util;
 
-import java.io.InputStream;
-import java.util.Properties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.apps.quantitymeasurement.service.auth.CustomUserDetailsService;
+
+@Configuration
 public class ApplicationConfig {
 
-    private static final Properties properties = new Properties();
+    private final CustomUserDetailsService userDetailsService;
 
-    static {
-        try {
-
-            InputStream input = ApplicationConfig.class
-                    .getClassLoader()
-                    .getResourceAsStream("application.properties");
-
-            if (input == null) {
-                throw new RuntimeException("application.properties file not found");
-            }
-
-            properties.load(input);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load application.properties", e);
-        }
+    public ApplicationConfig(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
-    public static String getProperty(String key) {
-        return properties.getProperty(key);
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
