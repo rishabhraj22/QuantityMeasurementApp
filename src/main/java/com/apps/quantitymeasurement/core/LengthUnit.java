@@ -2,10 +2,13 @@ package com.apps.quantitymeasurement.core;
 
 public enum LengthUnit implements IMeasurable {
 
-    FEET(12.0),
-    INCHES(1.0),
-    YARDS(36.0),
-    CENTIMETERS(0.393701);
+    KM(1000.0),
+    METER(1.0),
+    CM(0.01),
+
+    FEET(0.3048),
+    INCHES(0.0254),
+    YARDS(0.9144), CENTIMETERS;
 
     private final double conversionFactor;
 
@@ -13,21 +16,24 @@ public enum LengthUnit implements IMeasurable {
         this.conversionFactor = conversionFactor;
     }
 
-    @Override
+    LengthUnit() {
+		this.conversionFactor = 0;
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
     public double getConversionFactor() {
         return conversionFactor;
     }
 
     @Override
     public double convertToBaseUnit(double value) {
-        double result = value * conversionFactor;
-        return Math.round(result * 100.0) / 100.0;
+        return value * conversionFactor;
     }
 
     @Override
     public double convertFromBaseUnit(double baseValue) {
-        double result = baseValue / conversionFactor;
-        return Math.round(result * 100.0) / 100.0;
+        return baseValue / conversionFactor;
     }
 
     @Override

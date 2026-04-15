@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apps.quantitymeasurement.client.UserServiceClient;
 import com.apps.quantitymeasurement.core.IMeasurable;
 import com.apps.quantitymeasurement.core.LengthUnit;
 import com.apps.quantitymeasurement.core.Quantity;
@@ -15,19 +16,23 @@ import com.apps.quantitymeasurement.model.OperationType;
 import com.apps.quantitymeasurement.model.QuantityDTO;
 import com.apps.quantitymeasurement.repository.QuantityMeasurementRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @Service
 public class QuantityMeasurementServiceImpl implements IQuantityMeasurementService {
 
     @Autowired
     private QuantityMeasurementRepository repository;
 
-    // Convert DTO → Core Quantity
+    // 🔥 Feign Client
+    @Autowired
+    private UserServiceClient userServiceClient;
+
     private Quantity<IMeasurable> toQuantity(QuantityDTO dto) {
         IMeasurable unit = getCoreUnit(dto.getUnit());
         return new Quantity<>(dto.getValue(), unit);
     }
 
-    // Convert DTO Unit → Core Unit
     private IMeasurable getCoreUnit(String unitName) {
 
         for (LengthUnit u : LengthUnit.values())
@@ -49,15 +54,6 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
         throw new IllegalArgumentException("Invalid unit: " + unitName);
     }
 
-    // Convert Core Quantity → DTO
-    private QuantityDTO toDTO(Quantity<IMeasurable> quantity) {
-        return new QuantityDTO(
-                quantity.getValue(),
-                quantity.getUnit().getUnitName(),
-                quantity.getUnit().getClass().getSimpleName()
-        );
-    }
-
     @Override
     public QuantityDTO compare(QuantityDTO q1, QuantityDTO q2) {
 
@@ -73,13 +69,35 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
         );
     }
 
+    // 🔥 CIRCUIT BREAKER + FEIGN
     @Override
+    @CircuitBreaker(name = "userService", fallbackMethod = "fallbackConvert")
     public QuantityDTO convert(QuantityDTO quantityDTO, String targetUnit) {
 
         Quantity<IMeasurable> quantity = toQuantity(quantityDTO);
-
         IMeasurable coreTargetUnit = getCoreUnit(targetUnit);
+        Quantity<IMeasurable> result = quantity.convertTo(coreTargetUnit);
 
+        String message = "Converted " + quantityDTO.getValue() + " " + quantityDTO.getUnit()
+                + " to " + result.getValue() + " " + targetUnit;
+
+        // 🔥 Feign call
+        userServiceClient.saveHistory(1L, message);
+
+        return new QuantityDTO(
+                result.getValue(),
+                targetUnit,
+                quantityDTO.getMeasurementType()
+        );
+    }
+
+    // 🔥 FALLBACK METHOD
+    public QuantityDTO fallbackConvert(QuantityDTO quantityDTO, String targetUnit, Exception ex) {
+
+        System.out.println("🔥 FALLBACK TRIGGERED: " + ex.getMessage());
+
+        Quantity<IMeasurable> quantity = toQuantity(quantityDTO);
+        IMeasurable coreTargetUnit = getCoreUnit(targetUnit);
         Quantity<IMeasurable> result = quantity.convertTo(coreTargetUnit);
 
         return new QuantityDTO(
